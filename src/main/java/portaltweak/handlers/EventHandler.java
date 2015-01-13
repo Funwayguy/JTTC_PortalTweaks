@@ -1,34 +1,21 @@
 package portaltweak.handlers;
 
-import java.lang.reflect.Method;
-import portaltweak.core.JTTC_Settings;
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.PlayerEvent.PlayerRespawnEvent;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEndPortal;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.play.server.S05PacketSpawnPosition;
-import net.minecraft.network.play.server.S07PacketRespawn;
-import net.minecraft.network.play.server.S1FPacketSetExperience;
-import net.minecraft.network.play.server.S2BPacketChangeGameState;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.management.ItemInWorldManager;
-import net.minecraft.server.management.ServerConfigurationManager;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ChunkCoordinates;
-import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
-import net.minecraft.world.demo.DemoWorldManager;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.Action;
-
+import portaltweak.core.JTTC_Settings;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.PlayerEvent.PlayerChangedDimensionEvent;
 
 public class EventHandler
 {
@@ -108,112 +95,35 @@ public class EventHandler
 			event.entityLiving.timeUntilPortal = event.entityLiving.getPortalCooldown();
 		}
 		
-		if(event.entityLiving instanceof EntityPlayer && !event.entityLiving.isEntityAlive())
-		{
-			event.entityLiving.getEntityData().setInteger("Death_Dimension", event.entityLiving.worldObj.provider.dimensionId);
-		} else if(event.entityLiving instanceof EntityPlayer)
+		if(event.entityLiving instanceof EntityPlayer)
 		{
 			EntityPlayer player = (EntityPlayer)event.entityLiving;
-			ChunkCoordinates coords = player.getBedLocation(event.entityLiving.worldObj.provider.dimensionId);
+			int respawnDim = player.getEntityData().getCompoundTag(EntityPlayer.PERSISTED_NBT_TAG).getInteger("Death_Dimension");
 			
-			if(coords == null)
+			if(respawnDim != 0 && respawnDim != player.worldObj.provider.dimensionId)
 			{
-				player.setSpawnChunk(player.playerLocation, true, event.entityLiving.worldObj.provider.dimensionId);
+				RespawnHandler.RespawnPlayerInDimension(player, respawnDim);
 			}
 		}
 	}
 	
 	@SubscribeEvent
-	public void onRespawn(PlayerRespawnEvent event)
+	public void onDimensionChange(PlayerChangedDimensionEvent event)
 	{
-		if(!event.player.getEntityData().hasKey("Death_Dimension") || !(event.player instanceof EntityPlayerMP))
+		if(event.player.isEntityAlive())
 		{
-			return;
+			NBTTagCompound pTags = event.player.getEntityData().getCompoundTag(EntityPlayer.PERSISTED_NBT_TAG);
+			pTags.setInteger("Death_Dimension", event.toDim);
+			event.player.getEntityData().setTag(EntityPlayer.PERSISTED_NBT_TAG, pTags);
+			System.out.println("Death dimension set to " + event.toDim);
+			
+			ChunkCoordinates coords = event.player.getBedLocation(event.player.worldObj.provider.dimensionId);
+			
+			if(coords == null)
+			{
+				event.player.setSpawnChunk(event.player.getPlayerCoordinates(), true, event.player.worldObj.provider.dimensionId);
+				System.out.println("Set spawnpoint");
+			}
 		}
-		
-		EntityPlayerMP player = (EntityPlayerMP)event.player;
-		MinecraftServer server = MinecraftServer.getServer();
-		
-		int respawnDim = player.getEntityData().getInteger("Death_Dimension");
-		
-        World world = server.worldServerForDimension(respawnDim);
-        
-        if (world == null || world == player.worldObj)
-        {
-            return;
-        }
-
-        player.getServerForPlayer().getEntityTracker().removePlayerFromTrackers(player);
-        player.getServerForPlayer().getEntityTracker().removeEntityFromAllTrackingPlayers(player);
-        player.getServerForPlayer().getPlayerManager().removePlayer(player);
-        server.getConfigurationManager().playerEntityList.remove(player);
-        server.worldServerForDimension(player.dimension).removePlayerEntityDangerously(player);
-        ChunkCoordinates chunkcoordinates = player.getBedLocation(respawnDim);
-        boolean flag1 = player.isSpawnForced(respawnDim);
-        player.dimension = respawnDim;
-        Object object;
-
-        if (server.isDemo())
-        {
-            object = new DemoWorldManager(server.worldServerForDimension(player.dimension));
-        }
-        else
-        {
-            object = new ItemInWorldManager(server.worldServerForDimension(player.dimension));
-        }
-
-        EntityPlayerMP entityplayermp1 = new EntityPlayerMP(server, server.worldServerForDimension(player.dimension), player.getGameProfile(), (ItemInWorldManager)object);
-        entityplayermp1.playerNetServerHandler = player.playerNetServerHandler;
-        entityplayermp1.clonePlayer(player, false);
-        entityplayermp1.dimension = respawnDim;
-        entityplayermp1.setEntityId(player.getEntityId());
-        WorldServer worldserver = server.worldServerForDimension(player.dimension);
-        
-        try
-        {
-        	Method meth = ServerConfigurationManager.class.getDeclaredMethod("func_72381_a", EntityPlayerMP.class, EntityPlayerMP.class, World.class);
-        	meth.setAccessible(true);
-        	meth.invoke(server.getConfigurationManager(), entityplayermp1, player, worldserver);
-        	//server.getConfigurationManager().func_72381_a(entityplayermp1, player, worldserver);
-        } catch(Exception e)
-        {
-        	e.printStackTrace();
-        	return;
-        }
-        ChunkCoordinates chunkcoordinates1;
-
-        if (chunkcoordinates != null)
-        {
-            chunkcoordinates1 = EntityPlayer.verifyRespawnCoordinates(server.worldServerForDimension(player.dimension), chunkcoordinates, flag1);
-
-            if (chunkcoordinates1 != null)
-            {
-                entityplayermp1.setLocationAndAngles((double)((float)chunkcoordinates1.posX + 0.5F), (double)((float)chunkcoordinates1.posY + 0.1F), (double)((float)chunkcoordinates1.posZ + 0.5F), 0.0F, 0.0F);
-                entityplayermp1.setSpawnChunk(chunkcoordinates, flag1);
-            }
-            else
-            {
-                entityplayermp1.playerNetServerHandler.sendPacket(new S2BPacketChangeGameState(0, 0.0F));
-            }
-        }
-
-        worldserver.theChunkProviderServer.loadChunk((int)entityplayermp1.posX >> 4, (int)entityplayermp1.posZ >> 4);
-
-        while (!worldserver.getCollidingBoundingBoxes(entityplayermp1, entityplayermp1.boundingBox).isEmpty())
-        {
-            entityplayermp1.setPosition(entityplayermp1.posX, entityplayermp1.posY + 1.0D, entityplayermp1.posZ);
-        }
-
-        entityplayermp1.playerNetServerHandler.sendPacket(new S07PacketRespawn(entityplayermp1.dimension, entityplayermp1.worldObj.difficultySetting, entityplayermp1.worldObj.getWorldInfo().getTerrainType(), entityplayermp1.theItemInWorldManager.getGameType()));
-        chunkcoordinates1 = worldserver.getSpawnPoint();
-        entityplayermp1.playerNetServerHandler.setPlayerLocation(entityplayermp1.posX, entityplayermp1.posY, entityplayermp1.posZ, entityplayermp1.rotationYaw, entityplayermp1.rotationPitch);
-        entityplayermp1.playerNetServerHandler.sendPacket(new S05PacketSpawnPosition(chunkcoordinates1.posX, chunkcoordinates1.posY, chunkcoordinates1.posZ));
-        entityplayermp1.playerNetServerHandler.sendPacket(new S1FPacketSetExperience(entityplayermp1.experience, entityplayermp1.experienceTotal, entityplayermp1.experienceLevel));
-        server.getConfigurationManager().updateTimeAndWeatherForPlayer(entityplayermp1, worldserver);
-        worldserver.getPlayerManager().addPlayer(entityplayermp1);
-        worldserver.spawnEntityInWorld(entityplayermp1);
-        server.getConfigurationManager().playerEntityList.add(entityplayermp1);
-        entityplayermp1.addSelfToInternalCraftingInventory();
-        entityplayermp1.setHealth(entityplayermp1.getHealth());
 	}
 }

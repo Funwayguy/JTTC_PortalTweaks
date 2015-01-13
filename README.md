@@ -1,4 +1,4 @@
-MobHoard
+PortalTweaks
 ========
 
-Send hoards of mobs toward players
+A custom mod for Journey to the Core

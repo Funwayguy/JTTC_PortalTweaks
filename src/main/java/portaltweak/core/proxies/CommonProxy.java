@@ -1,5 +1,6 @@
 package portaltweak.core.proxies;
 
+import cpw.mods.fml.common.FMLCommonHandler;
 import net.minecraftforge.common.MinecraftForge;
 import portaltweak.handlers.EventHandler;
 
@@ -12,6 +13,8 @@ public class CommonProxy
 	
 	public void registerHandlers()
 	{
-		MinecraftForge.EVENT_BUS.register(new EventHandler());
+		EventHandler handler = new EventHandler();
+		MinecraftForge.EVENT_BUS.register(handler);
+		FMLCommonHandler.instance().bus().register(handler);
 	}
 }

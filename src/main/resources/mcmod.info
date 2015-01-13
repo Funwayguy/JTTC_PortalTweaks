@@ -1,0 +1,17 @@
+[
+{
+  "modid": "portaltweak",
+  "name": "JTTC Portal Tweak",
+  "description": "A mini mod for the 'Journey to the Core' modpack to make portals one-way",
+  "version": "1.2",
+  "mcversion": "1.7.10",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["Funwayguy","Darkosto"],
+  "credits": "",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": ["enviromine","ExtraUtilites"]
+  "requiredMods": ["enviromine","ExtraUtilites"]
+}
+]

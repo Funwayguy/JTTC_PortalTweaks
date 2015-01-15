@@ -11,9 +11,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
+import net.minecraftforge.event.entity.living.LivingSpawnEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.Action;
 import portaltweak.core.JTTC_Settings;
+import cpw.mods.fml.common.eventhandler.Event.Result;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent.PlayerChangedDimensionEvent;
 
@@ -124,6 +126,16 @@ public class EventHandler
 				event.player.setSpawnChunk(event.player.getPlayerCoordinates(), true, event.player.worldObj.provider.dimensionId);
 				System.out.println("Set spawnpoint");
 			}
+		}
+	}
+	
+	@SubscribeEvent
+	public void onLivingSpawn(LivingSpawnEvent.CheckSpawn event)
+	{
+		if(!(event.entityLiving instanceof EntityPlayer) && (event.y > 255 || event.y < 0))
+		{
+			event.setResult(Result.DENY);
+			return;
 		}
 	}
 }

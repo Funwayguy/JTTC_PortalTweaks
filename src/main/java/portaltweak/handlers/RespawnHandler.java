@@ -70,7 +70,15 @@ public class RespawnHandler
 	
 	private static void RespawnPlayerMP(EntityPlayerMP player, int dimension)
 	{
-        ChunkCoordinates chunkcoordinates = player.mcServer.worldServerForDimension(dimension).getEntrancePortalLocation();
+		ChunkCoordinates chunkcoordinates;
+		
+		try
+		{
+			chunkcoordinates = player.mcServer.worldServerForDimension(dimension).getEntrancePortalLocation();
+		} catch(Exception e)
+		{
+			return;
+		}
         
         if(player.getBedLocation(dimension) != null)
         {

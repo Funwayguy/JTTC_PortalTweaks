@@ -112,7 +112,7 @@ public class EventHandler
 	@SubscribeEvent
 	public void onDimensionChange(PlayerChangedDimensionEvent event)
 	{
-		if(event.player.isEntityAlive())
+		if(event.player.getHealth() > 0)
 		{
 			NBTTagCompound pTags = event.player.getEntityData().getCompoundTag(EntityPlayer.PERSISTED_NBT_TAG);
 			pTags.setInteger("Death_Dimension", event.toDim);

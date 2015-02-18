@@ -3,6 +3,10 @@ package portaltweak.handlers;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEndPortal;
 import net.minecraft.block.material.Material;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.ai.attributes.AttributeModifier;
+import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -10,6 +14,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ChunkCoordinates;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.entity.living.LivingSpawnEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
@@ -21,6 +26,45 @@ import cpw.mods.fml.common.gameevent.PlayerEvent.PlayerChangedDimensionEvent;
 
 public class EventHandler
 {
+	@SubscribeEvent
+	public void onJoinWorld(EntityJoinWorldEvent event)
+	{
+		if(event.entity instanceof IMob && event.entity instanceof EntityLivingBase && !event.world.isRemote)
+		{
+			EntityLivingBase entityLiving = (EntityLivingBase)event.entity;
+			DimSettings dimSet = JTTC_Settings.dimSettings.get(event.world.provider.dimensionId);
+			
+			if(entityLiving.getEntityData().getBoolean("JTTC_TWEAKED"))
+			{
+				return;
+			} else
+			{
+				entityLiving.getEntityData().setBoolean("JTTC_TWEAKED", true);
+			}
+			
+			if(dimSet != null)
+			{
+				if(entityLiving.getEntityAttribute(SharedMonsterAttributes.maxHealth) != null)
+				{
+					entityLiving.getEntityAttribute(SharedMonsterAttributes.maxHealth).applyModifier(new AttributeModifier("JTTC_TWEAK_1", dimSet.hpMult, 1));
+					entityLiving.setHealth(entityLiving.getMaxHealth());
+				}
+				if(entityLiving.getEntityAttribute(SharedMonsterAttributes.movementSpeed) != null)
+				{
+					entityLiving.getEntityAttribute(SharedMonsterAttributes.movementSpeed).applyModifier(new AttributeModifier("JTTC_TWEAK_2", dimSet.spdMult, 1));
+				}
+				if(entityLiving.getEntityAttribute(SharedMonsterAttributes.attackDamage) != null)
+				{
+					entityLiving.getEntityAttribute(SharedMonsterAttributes.attackDamage).applyModifier(new AttributeModifier("JTTC_TWEAK_3", dimSet.dmgMult, 1));
+				}
+				if(entityLiving.getEntityAttribute(SharedMonsterAttributes.knockbackResistance) != null)
+				{
+					entityLiving.getEntityAttribute(SharedMonsterAttributes.knockbackResistance).applyModifier(new AttributeModifier("JTTC_TWEAK_4", dimSet.dmgMult, 1));
+				}
+			}
+		}
+	}
+	
 	@SubscribeEvent
 	public void onInteract(PlayerInteractEvent event)
 	{

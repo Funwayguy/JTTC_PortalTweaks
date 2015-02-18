@@ -1,5 +1,8 @@
 package portaltweak.core;
 
+import java.util.HashMap;
+import portaltweak.handlers.DimSettings;
+
 /**
  * A container for all the configurable settings in the mod
  */
@@ -13,4 +16,6 @@ public class JTTC_Settings
 	
 	public static String portalKey = "minecraft:ender_eye";
 	public static int keyMeta = 0;
+	
+	public static HashMap<Integer, DimSettings> dimSettings = new HashMap<Integer, DimSettings>();
 }

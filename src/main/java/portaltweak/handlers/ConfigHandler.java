@@ -1,7 +1,10 @@
 package portaltweak.handlers;
 
 import java.io.File;
+import java.util.Iterator;
+import java.util.Set;
 import portaltweak.core.JTTC_Settings;
+import net.minecraftforge.common.config.ConfigCategory;
 import net.minecraftforge.common.config.Configuration;
 
 public class ConfigHandler
@@ -52,6 +55,36 @@ public class ConfigHandler
 		JTTC_Settings.escapeMeta = config.get("Main", "Escape Metadata", 0, "The metadata of the escape block").getInt(0);
 		JTTC_Settings.portalKey = config.get("Main", "Nether Key Item", "minecraft:ender_eye", "Item that must be in the players hand for nether portal to work (set blank to disable)").getString();
 		JTTC_Settings.keyMeta = config.get("Main", "Key Metadata", 1, "The metadata/damage of the key item").getInt();
+		
+		Set<ConfigCategory> cats = config.getCategory("Dimension Tweaks").getChildren();
+		
+		if(cats.size() <= 0)
+		{
+			config.get("Dimension Tweaks.Overworld", "01.Dimension ID", 0).getInt(0);
+			config.get("Dimension Tweaks.Overworld", "02.Health Mult", 1.0D).getDouble(1.0D);
+			config.get("Dimension Tweaks.Overworld", "03.Damage Mult", 1.0D).getDouble(1.0D);
+			config.get("Dimension Tweaks.Overworld", "04.Speed Mult", 1.0D).getDouble(1.0D);
+			config.get("Dimension Tweaks.Overworld", "05.Knockback Resistance Mult", 1.0D).getDouble(1.0D);
+			cats = config.getCategory("Dimension Tweaks").getChildren();
+		}
+		
+		Iterator<ConfigCategory> iterator = cats.iterator();
+		
+		while(iterator.hasNext())
+		{
+			ConfigCategory cat = iterator.next();
+			if(cat.getChildren().size() <= 0)
+			{
+				int dimID = config.get(cat.getQualifiedName(), "01.Dimension ID", 0).getInt(0);
+				double hpMult = config.get(cat.getQualifiedName(), "02.Health Mult", 1.0D).getDouble(1.0D);
+				double dmgMult = config.get(cat.getQualifiedName(), "03.Damage Mult", 1.0D).getDouble(1.0D);
+				double spdMult = config.get(cat.getQualifiedName(), "04.Speed Mult", 1.0D).getDouble(1.0D);
+				double knockResist = config.get(cat.getQualifiedName(), "05.Knockback Resistance Mult", 1.0D).getDouble(1.0D);
+				
+				DimSettings dimSet = new DimSettings(hpMult, dmgMult, spdMult, knockResist);
+				JTTC_Settings.dimSettings.put(dimID, dimSet);
+			}
+		}
 		
 		config.save();
 	}

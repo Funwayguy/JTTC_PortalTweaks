@@ -17,5 +17,8 @@ public class JTTC_Settings
 	public static String portalKey = "minecraft:ender_eye";
 	public static int keyMeta = 0;
 	
+	public static boolean safeOverworld = true;
+	public static boolean reRollSeed = true;
+	
 	public static HashMap<Integer, DimSettings> dimSettings = new HashMap<Integer, DimSettings>();
 }

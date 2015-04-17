@@ -55,6 +55,8 @@ public class ConfigHandler
 		JTTC_Settings.escapeMeta = config.get("Main", "Escape Metadata", 0, "The metadata of the escape block").getInt(0);
 		JTTC_Settings.portalKey = config.get("Main", "Nether Key Item", "minecraft:ender_eye", "Item that must be in the players hand for nether portal to work (set blank to disable)").getString();
 		JTTC_Settings.keyMeta = config.get("Main", "Key Metadata", 1, "The metadata/damage of the key item").getInt();
+		JTTC_Settings.safeOverworld = config.getBoolean("Safe Overworld", "Main", true, "Prevents mobs spawning in the overworld (JTTC starting room)");
+		JTTC_Settings.reRollSeed = config.getBoolean("Re-roll Seed", "Main", true, "Re-rolls the world seed (May cause generation issues. Use with caution)");
 		
 		Set<ConfigCategory> cats = config.getCategory("Dimension Tweaks").getChildren();
 		

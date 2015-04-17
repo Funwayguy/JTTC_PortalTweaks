@@ -1,8 +1,13 @@
 package portaltweak.handlers;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.util.ArrayList;
+import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEndPortal;
 import net.minecraft.block.material.Material;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
@@ -13,13 +18,21 @@ import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ChunkCoordinates;
+import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
+import net.minecraft.world.storage.WorldInfo;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.entity.living.LivingSpawnEvent;
+import net.minecraftforge.event.entity.player.EntityInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.Action;
+import net.minecraftforge.event.world.WorldEvent;
 import portaltweak.core.JTTC_Settings;
+import portaltweak.core.PortalTweak;
+import cpw.mods.fml.common.ObfuscationReflectionHelper;
 import cpw.mods.fml.common.eventhandler.Event.Result;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent.PlayerChangedDimensionEvent;
@@ -68,6 +81,11 @@ public class EventHandler
 	@SubscribeEvent
 	public void onInteract(PlayerInteractEvent event)
 	{
+		if(event.entityPlayer.capabilities.isCreativeMode)
+		{
+			return;
+		}
+		
 		if(event.action == Action.RIGHT_CLICK_BLOCK)
 		{
 			ItemStack stack = event.entityPlayer.getHeldItem();
@@ -130,6 +148,19 @@ public class EventHandler
 	}
 	
 	@SubscribeEvent
+	public void onEntityInteract(EntityInteractEvent event)
+	{
+		if(event.target instanceof EntityLiving)
+		{
+			if(((EntityLiving)event.target).getCustomNameTag().equalsIgnoreCase("Herobrine")) // Disables people's ability to capture Herobrine by hand
+			{
+				event.setCanceled(true);
+				return;
+			}
+		}
+	}
+	
+	@SubscribeEvent
 	public void onLiving(LivingUpdateEvent event)
 	{
 		ItemStack stack = event.entityLiving.getHeldItem();
@@ -180,6 +211,64 @@ public class EventHandler
 		{
 			event.setResult(Result.DENY);
 			return;
+		} else if(JTTC_Settings.safeOverworld && event.entityLiving instanceof IMob && event.world.provider.dimensionId == 0)
+		{
+			event.setResult(Result.DENY);
+			return;
+		}
+	}
+	
+	ArrayList<World> convertedWorlds = new ArrayList<World>();
+	
+	@SubscribeEvent
+	public void onWorldLoad(WorldEvent.Load event)
+	{
+		if(!JTTC_Settings.reRollSeed || event.world.isRemote || convertedWorlds.contains(event.world))
+		{
+			return;
+		}
+		
+		File file = MinecraftServer.getServer().getFile((PortalTweak.proxy.isClient()? "saves/" : "") + MinecraftServer.getServer().getFolderName() + "/JTTC_Seed.txt");
+		
+		if(!file.exists()) // If the seed hasn't previously been set then we can re-roll the seed
+		{
+			long seed = new Random().nextLong();
+			
+			System.out.println("Randomising seed...");
+			
+			for(WorldServer world : MinecraftServer.getServer().worldServers)
+			{
+				convertedWorlds.add(world);
+				ObfuscationReflectionHelper.setPrivateValue(WorldInfo.class, world.getWorldInfo(), seed, "field_76100_a", "randomSeed");
+				world.provider.registerWorld(world);
+			}
+			
+			FileWriter fw = null;
+			
+			try
+			{
+				file.createNewFile();
+				fw = new FileWriter(file);
+				fw.write("" + seed);
+			} catch(Exception e)
+			{
+				e.printStackTrace();
+			} finally
+			{
+				if(fw != null)
+				{
+					try
+					{
+						fw.close();
+					} catch(Exception e)
+					{
+						e.printStackTrace();
+					}
+				}
+			}
+		} else
+		{
+			convertedWorlds.add(event.world);
 		}
 	}
 }

@@ -16,5 +16,6 @@ public class CommonProxy
 		EventHandler handler = new EventHandler();
 		MinecraftForge.EVENT_BUS.register(handler);
 		FMLCommonHandler.instance().bus().register(handler);
+		MinecraftForge.TERRAIN_GEN_BUS.register(handler);
 	}
 }

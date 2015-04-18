@@ -3,10 +3,12 @@ package portaltweak.handlers;
 import java.io.File;
 import java.io.FileWriter;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEndPortal;
 import net.minecraft.block.material.Material;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
@@ -27,9 +29,13 @@ import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.entity.living.LivingSpawnEvent;
 import net.minecraftforge.event.entity.player.EntityInteractEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.Action;
+import net.minecraftforge.event.terraingen.ChunkProviderEvent;
 import net.minecraftforge.event.world.WorldEvent;
+import portaltweak.MapGenModifiedCaves;
+import portaltweak.MapGenModifiedRavine;
 import portaltweak.core.JTTC_Settings;
 import portaltweak.core.PortalTweak;
 import cpw.mods.fml.common.ObfuscationReflectionHelper;
@@ -179,8 +185,20 @@ public class EventHandler
 			
 			if(respawnDim != 0 && respawnDim != player.worldObj.provider.dimensionId)
 			{
+				event.entityLiving.timeUntilPortal = event.entityLiving.getPortalCooldown();
 				RespawnHandler.RespawnPlayerInDimension(player, respawnDim);
 			}
+		}
+	}
+	
+	@SubscribeEvent
+	public void onPlayerCopy(PlayerEvent.Clone event)
+	{
+		if(event.original.dimension == 0 && event.original.getHealth() > 0 && event.entityPlayer.dimension == 0)
+		{
+			NBTTagCompound pTags = event.entityPlayer.getEntityData().getCompoundTag(EntityPlayer.PERSISTED_NBT_TAG);
+			pTags.setInteger("Death_Dimension", 0);
+			event.entityPlayer.getEntityData().setTag(EntityPlayer.PERSISTED_NBT_TAG, pTags);
 		}
 	}
 	
@@ -192,14 +210,23 @@ public class EventHandler
 			NBTTagCompound pTags = event.player.getEntityData().getCompoundTag(EntityPlayer.PERSISTED_NBT_TAG);
 			pTags.setInteger("Death_Dimension", event.toDim);
 			event.player.getEntityData().setTag(EntityPlayer.PERSISTED_NBT_TAG, pTags);
-			System.out.println("Death dimension set to " + event.toDim);
 			
 			ChunkCoordinates coords = event.player.getBedLocation(event.player.worldObj.provider.dimensionId);
 			
 			if(coords == null)
 			{
 				event.player.setSpawnChunk(event.player.getPlayerCoordinates(), true, event.player.worldObj.provider.dimensionId);
-				System.out.println("Set spawnpoint");
+			}
+			
+			@SuppressWarnings("unchecked")
+			List<IMob> killList = event.player.worldObj.getEntitiesWithinAABB(IMob.class, event.player.boundingBox.expand(JTTC_Settings.spawnKillRange, JTTC_Settings.spawnKillRange, JTTC_Settings.spawnKillRange));
+			
+			for(IMob mob : killList)
+			{
+				if(mob instanceof Entity)
+				{
+					((Entity)mob).setDead();
+				}
 			}
 		}
 	}
@@ -234,8 +261,6 @@ public class EventHandler
 		{
 			long seed = new Random().nextLong();
 			
-			System.out.println("Randomising seed...");
-			
 			for(WorldServer world : MinecraftServer.getServer().worldServers)
 			{
 				convertedWorlds.add(world);
@@ -269,6 +294,30 @@ public class EventHandler
 		} else
 		{
 			convertedWorlds.add(event.world);
+		}
+	}
+	
+	MapGenModifiedCaves deepDarkCaveGen;
+	MapGenModifiedRavine deepDarkRavineGen;
+	
+	@SubscribeEvent
+	public void preOreGen(ChunkProviderEvent.ReplaceBiomeBlocks event)
+	{
+		if(event.world.provider.dimensionId == JTTC_Settings.deepDarkID && JTTC_Settings.deepDarkCaves > 0)
+		{
+			if(deepDarkCaveGen == null)
+			{
+				deepDarkCaveGen = new MapGenModifiedCaves();
+			}
+			
+			deepDarkCaveGen.func_151539_a(event.chunkProvider, event.world, event.chunkX, event.chunkZ, event.blockArray);
+			
+			if(deepDarkRavineGen == null)
+			{
+				deepDarkRavineGen = new MapGenModifiedRavine();
+			}
+			
+			deepDarkRavineGen.func_151539_a(event.chunkProvider, event.world, event.chunkX, event.chunkZ, event.blockArray);
 		}
 	}
 }

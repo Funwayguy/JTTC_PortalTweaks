@@ -82,11 +82,7 @@ public class RespawnHandler
         
         if(player.getBedLocation(dimension) != null)
         {
-        	System.out.println("Spawnpoint found!");
         	chunkcoordinates = player.getBedLocation(dimension);
-        } else
-        {
-        	System.out.println("Warning! No spawn found!");
         }
 
         if (chunkcoordinates != null)
@@ -204,15 +200,4 @@ public class RespawnHandler
 		
 		return;
 	}
-    
-    /*public static int getSuitableSpawnHeight(World world, int par1, int par2)
-    {
-        int k;
-
-        for (k = 63; !world.isAirBlock(par1, k, par2) || !world.isAirBlock(par1, k + 1, par2); ++k)
-        {
-        }
-
-        return k;
-    }*/
 }

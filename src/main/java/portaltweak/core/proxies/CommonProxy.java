@@ -1,7 +1,9 @@
 package portaltweak.core.proxies;
 
 import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.registry.GameRegistry;
 import net.minecraftforge.common.MinecraftForge;
+import portaltweak.WorldGenDeepCaves;
 import portaltweak.handlers.EventHandler;
 
 public class CommonProxy
@@ -16,6 +18,6 @@ public class CommonProxy
 		EventHandler handler = new EventHandler();
 		MinecraftForge.EVENT_BUS.register(handler);
 		FMLCommonHandler.instance().bus().register(handler);
-		MinecraftForge.TERRAIN_GEN_BUS.register(handler);
+		GameRegistry.registerWorldGenerator(new WorldGenDeepCaves(), 0);
 	}
 }

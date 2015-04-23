@@ -20,7 +20,7 @@ public class JTTC_Settings
 	public static boolean safeOverworld = true;
 	public static boolean reRollSeed = true;
 	public static int spawnKillRange = 128;
-	public static int deepDarkCaves = 100;
+	public static int deepDarkCaves = 50;
 	
 	public static HashMap<Integer, DimSettings> dimSettings = new HashMap<Integer, DimSettings>();
 }

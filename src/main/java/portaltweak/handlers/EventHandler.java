@@ -32,10 +32,7 @@ import net.minecraftforge.event.entity.player.EntityInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.Action;
-import net.minecraftforge.event.terraingen.ChunkProviderEvent;
 import net.minecraftforge.event.world.WorldEvent;
-import portaltweak.MapGenModifiedCaves;
-import portaltweak.MapGenModifiedRavine;
 import portaltweak.core.JTTC_Settings;
 import portaltweak.core.PortalTweak;
 import cpw.mods.fml.common.ObfuscationReflectionHelper;
@@ -294,30 +291,6 @@ public class EventHandler
 		} else
 		{
 			convertedWorlds.add(event.world);
-		}
-	}
-	
-	MapGenModifiedCaves deepDarkCaveGen;
-	MapGenModifiedRavine deepDarkRavineGen;
-	
-	@SubscribeEvent
-	public void preOreGen(ChunkProviderEvent.ReplaceBiomeBlocks event)
-	{
-		if(event.world.provider.dimensionId == JTTC_Settings.deepDarkID && JTTC_Settings.deepDarkCaves > 0)
-		{
-			if(deepDarkCaveGen == null)
-			{
-				deepDarkCaveGen = new MapGenModifiedCaves();
-			}
-			
-			deepDarkCaveGen.func_151539_a(event.chunkProvider, event.world, event.chunkX, event.chunkZ, event.blockArray);
-			
-			if(deepDarkRavineGen == null)
-			{
-				deepDarkRavineGen = new MapGenModifiedRavine();
-			}
-			
-			deepDarkRavineGen.func_151539_a(event.chunkProvider, event.world, event.chunkX, event.chunkZ, event.blockArray);
 		}
 	}
 }

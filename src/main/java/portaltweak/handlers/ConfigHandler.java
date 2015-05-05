@@ -58,6 +58,7 @@ public class ConfigHandler
 		JTTC_Settings.safeOverworld = config.getBoolean("Safe Overworld", "Main", true, "Prevents mobs spawning in the overworld (JTTC starting room)");
 		JTTC_Settings.reRollSeed = config.getBoolean("Re-roll Seed", "Main", true, "Re-rolls the world seed (May cause generation issues. Use with caution)");
 		JTTC_Settings.spawnKillRange = config.getInt("Spawn Kill Range", "Main", 128, 0, 1024, "The range of mobs that will be deleted upon entering a dimension");
+		JTTC_Settings.nightVision = config.getInt("Spawn Nightvison", "Main", 45, 0, 600, "How many seconds the player will have night vision upon entering a dimension");
 		JTTC_Settings.deepDarkCaves = config.getInt("Deep Dark Caves", "Main", 50, 0, 100, "Amount of extra caves/ravines in the deep dark");
 		
 		Set<ConfigCategory> cats = config.getCategory("Dimension Tweaks").getChildren();

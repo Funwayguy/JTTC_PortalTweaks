@@ -20,6 +20,8 @@ import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.potion.Potion;
+import net.minecraft.potion.PotionEffect;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.world.World;
@@ -224,6 +226,11 @@ public class EventHandler
 				{
 					((Entity)mob).setDead();
 				}
+			}
+			
+			if(JTTC_Settings.nightVision > 0 && !event.player.worldObj.isRemote)
+			{
+				event.player.addPotionEffect(new PotionEffect(Potion.nightVision.id, JTTC_Settings.nightVision * 20));
 			}
 		}
 	}

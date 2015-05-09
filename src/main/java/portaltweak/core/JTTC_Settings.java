@@ -22,6 +22,7 @@ public class JTTC_Settings
 	public static int spawnKillRange = 128;
 	public static int deepDarkCaves = 50;
 	public static int nightVision = 45;
+	public static int coreLavaY = 32;
 	
 	public static HashMap<Integer, DimSettings> dimSettings = new HashMap<Integer, DimSettings>();
 }

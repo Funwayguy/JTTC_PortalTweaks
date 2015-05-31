@@ -24,6 +24,7 @@ import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ChunkCoordinates;
+import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.storage.WorldInfo;
@@ -186,6 +187,12 @@ public class EventHandler
 			{
 				event.entityLiving.timeUntilPortal = event.entityLiving.getPortalCooldown();
 				RespawnHandler.RespawnPlayerInDimension(player, respawnDim);
+			} else if(player.dimension == -1 && player.posY >= 255) // Nerf living above the nether
+			{
+				player.attackEntityFrom(DamageSource.outOfWorld, 2F);
+			} else if(player.getBedLocation(player.dimension) != null && !player.isSpawnForced(player.dimension)) // Force player spawns even on broken beds. Prevents re-spawning on top of the world
+			{
+				player.setSpawnChunk(player.getBedLocation(player.dimension), true, player.dimension);
 			}
 		}
 	}

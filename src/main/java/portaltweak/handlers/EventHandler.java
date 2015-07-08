@@ -65,7 +65,7 @@ public class EventHandler
 			{
 				if(entityLiving.getEntityAttribute(SharedMonsterAttributes.maxHealth) != null)
 				{
-					entityLiving.getEntityAttribute(SharedMonsterAttributes.maxHealth).applyModifier(new AttributeModifier("JTTC_TWEAK_1", dimSet.hpMult, 1));
+					entityLiving.getEntityAttribute(SharedMonsterAttributes.maxHealth).applyModifier(new AttributeModifier("JTTC_TWEAK_1", dimSet.hpMult + (event.world.provider.dimensionId == JTTC_Settings.deepDarkID? 1F : 0F), 1));
 					entityLiving.setHealth(entityLiving.getMaxHealth());
 				}
 				if(entityLiving.getEntityAttribute(SharedMonsterAttributes.movementSpeed) != null)
@@ -74,7 +74,7 @@ public class EventHandler
 				}
 				if(entityLiving.getEntityAttribute(SharedMonsterAttributes.attackDamage) != null)
 				{
-					entityLiving.getEntityAttribute(SharedMonsterAttributes.attackDamage).applyModifier(new AttributeModifier("JTTC_TWEAK_3", dimSet.dmgMult, 1));
+					entityLiving.getEntityAttribute(SharedMonsterAttributes.attackDamage).applyModifier(new AttributeModifier("JTTC_TWEAK_3", dimSet.dmgMult + (event.world.provider.dimensionId == JTTC_Settings.deepDarkID? 1F : 0F), 1));
 				}
 				if(entityLiving.getEntityAttribute(SharedMonsterAttributes.knockbackResistance) != null)
 				{

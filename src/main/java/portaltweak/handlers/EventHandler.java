@@ -88,11 +88,6 @@ public class EventHandler
 	@SubscribeEvent
 	public void onInteract(PlayerInteractEvent event)
 	{
-		if(event.entityPlayer.capabilities.isCreativeMode)
-		{
-			return;
-		}
-		
 		if(event.action == Action.RIGHT_CLICK_BLOCK)
 		{
 			ItemStack stack = event.entityPlayer.getHeldItem();
@@ -101,16 +96,23 @@ public class EventHandler
 			int meta = event.world.getBlockMetadata(event.x, event.y, event.z);
 			Item itemBlock = Item.getItemFromBlock(block);
 			
+			if(block instanceof BlockBed && !event.world.isRemote)
+			{
+				event.entityPlayer.setSpawnChunk(event.entityPlayer.getPlayerCoordinates(), true, event.entityPlayer.dimension);
+				event.setCanceled(true);
+			}
+			
+			if(event.entityPlayer.capabilities.isCreativeMode)
+			{
+				return;
+			}
+			
 			if(block == null || block == Blocks.air)
 			{
 				return;
 			}
 			
-			if(block instanceof BlockBed && !event.world.isRemote)
-			{
-				event.entityPlayer.setSpawnChunk(event.entityPlayer.getPlayerCoordinates(), true, event.entityPlayer.dimension);
-				event.setCanceled(true);
-			} else if((Block.blockRegistry.getNameForObject(block).equals(JTTC_Settings.escapeBlock) || (itemBlock != null && Item.itemRegistry.getNameForObject(itemBlock).equals(JTTC_Settings.escapeBlock))) && (meta == JTTC_Settings.escapeMeta || JTTC_Settings.escapeMeta < 0) && dimension == -1)
+			if((Block.blockRegistry.getNameForObject(block).equals(JTTC_Settings.escapeBlock) || (itemBlock != null && Item.itemRegistry.getNameForObject(itemBlock).equals(JTTC_Settings.escapeBlock))) && (meta == JTTC_Settings.escapeMeta || JTTC_Settings.escapeMeta < 0) && dimension == -1)
 			{
 				if(!event.world.isRemote)
 				{

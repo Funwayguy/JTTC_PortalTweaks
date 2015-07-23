@@ -24,6 +24,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
@@ -98,6 +99,7 @@ public class EventHandler
 			
 			if(block instanceof BlockBed && !event.world.isRemote)
 			{
+				event.entityPlayer.addChatComponentMessage(new ChatComponentText("Spawn Set"));
 				event.entityPlayer.setSpawnChunk(event.entityPlayer.getPlayerCoordinates(), true, event.entityPlayer.dimension);
 				event.setCanceled(true);
 			}

@@ -196,7 +196,7 @@ public class EventHandler
 			{
 				event.entityLiving.timeUntilPortal = event.entityLiving.getPortalCooldown();
 				RespawnHandler.RespawnPlayerInDimension(player, respawnDim);
-			} else if(player.dimension == -1 && player.posY >= 127) // Nerf living above the nether
+			} else if(!player.capabilities.isCreativeMode && player.dimension == -1 && player.posY >= player.worldObj.provider.getActualHeight() - 1) // Nerf living above the nether
 			{
 				player.attackEntityFrom(DamageSource.outOfWorld, 2F);
 			} else if(player.getBedLocation(player.dimension) != null && !player.isSpawnForced(player.dimension)) // Force player spawns even on broken beds. Prevents re-spawning on top of the world

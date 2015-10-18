@@ -3,9 +3,9 @@ package portaltweak.handlers;
 import java.io.File;
 import java.util.Iterator;
 import java.util.Set;
-import portaltweak.core.JTTC_Settings;
 import net.minecraftforge.common.config.ConfigCategory;
 import net.minecraftforge.common.config.Configuration;
+import portaltweak.core.JTTC_Settings;
 
 public class ConfigHandler
 {
@@ -60,7 +60,15 @@ public class ConfigHandler
 		JTTC_Settings.spawnKillRange = config.getInt("Spawn Kill Range", "Main", 128, 0, 1024, "The range of mobs that will be deleted upon entering a dimension");
 		JTTC_Settings.nightVision = config.getInt("Spawn Nightvison", "Main", 45, 0, 600, "How many seconds the player will have night vision upon entering a dimension");
 		JTTC_Settings.deepDarkCaves = config.getInt("Deep Dark Caves", "Main", 50, 0, 100, "Amount of extra caves/ravines in the deep dark");
-		JTTC_Settings.coreLavaY = config.getInt("Core Lava Height", Configuration.CATEGORY_GENERAL, 32, 0, 64, "How high is the lava core in the End dimension");
+		JTTC_Settings.coreLavaY = config.getInt("Core Lava Height", "Main", 32, 0, 64, "How high is the lava core in the End dimension");
+		JTTC_Settings.dmgLimit = config.getInt("Entity Damage Limit", "Main", 20, 1, Integer.MAX_VALUE, "How much damage is the player allowed to inflict on the seleted entities in one hit");
+		
+		JTTC_Settings.dmgLimitedMobs.clear();;
+		
+		for(String entry : config.getStringList("Damage Limited Mobs", "Main", new String[]{}, ""))
+		{
+			JTTC_Settings.dmgLimitedMobs.add(entry);
+		}
 		
 		Set<ConfigCategory> cats = config.getCategory("Dimension Tweaks").getChildren();
 		

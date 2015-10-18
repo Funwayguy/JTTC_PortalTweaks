@@ -10,6 +10,7 @@ import net.minecraft.block.BlockBed;
 import net.minecraft.block.BlockEndPortal;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
@@ -32,6 +33,7 @@ import net.minecraft.world.WorldServer;
 import net.minecraft.world.storage.WorldInfo;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.living.LivingSpawnEvent;
 import net.minecraftforge.event.entity.player.EntityInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -203,6 +205,17 @@ public class EventHandler
 			{
 				player.setSpawnChunk(player.getBedLocation(player.dimension), true, player.dimension);
 			}
+		}
+	}
+	
+	@SubscribeEvent
+	public void onLivingAttacked(LivingHurtEvent event)
+	{
+		String ID = EntityList.getEntityString(event.entityLiving);
+		
+		if(JTTC_Settings.dmgLimitedMobs.contains(ID))
+		{
+			event.ammount = JTTC_Settings.dmgLimit;
 		}
 	}
 	

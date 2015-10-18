@@ -1,5 +1,6 @@
 package portaltweak.core;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import portaltweak.handlers.DimSettings;
 
@@ -23,6 +24,8 @@ public class JTTC_Settings
 	public static int deepDarkCaves = 50;
 	public static int nightVision = 45;
 	public static int coreLavaY = 32;
+	public static int dmgLimit = 20;
+	public static ArrayList<String> dmgLimitedMobs = new ArrayList<String>();
 	
 	public static HashMap<Integer, DimSettings> dimSettings = new HashMap<Integer, DimSettings>();
 }

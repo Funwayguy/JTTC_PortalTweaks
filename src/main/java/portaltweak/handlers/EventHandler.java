@@ -215,7 +215,7 @@ public class EventHandler
 		
 		if(JTTC_Settings.dmgLimitedMobs.contains(ID))
 		{
-			event.ammount = JTTC_Settings.dmgLimit;
+			event.ammount = Math.min(JTTC_Settings.dmgLimit, event.ammount);
 		}
 	}
 	

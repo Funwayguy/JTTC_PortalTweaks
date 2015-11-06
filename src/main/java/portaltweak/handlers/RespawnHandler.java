@@ -54,7 +54,7 @@ public class RespawnHandler
                 {
                 	chunkcoordinates = player.getBedLocation(dimension);
                 }
-                //chunkcoordinates.posY = player.worldObj.getTopSolidOrLiquidBlock(chunkcoordinates.posX, chunkcoordinates.posZ);
+                
                 entity.setLocationAndAngles((double)chunkcoordinates.posX, (double)chunkcoordinates.posY, (double)chunkcoordinates.posZ, entity.rotationYaw, entity.rotationPitch);
 
                 worldserver1.spawnEntityInWorld(entity);

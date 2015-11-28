@@ -180,6 +180,28 @@ public class EventHandler
 	@SubscribeEvent
 	public void onLiving(LivingUpdateEvent event)
 	{
+		// Invincible exploit prevention
+		PotionEffect effect = event.entityLiving.getActivePotionEffect(Potion.resistance);
+		
+		if(effect != null && (effect.getIsPotionDurationMax() || effect.getDuration() > 18000))
+		{
+			event.entityLiving.removePotionEffect(Potion.resistance.id);
+		}
+		
+		effect = event.entityLiving.getActivePotionEffect(Potion.regeneration);
+		
+		if(effect != null && (effect.getIsPotionDurationMax() || effect.getDuration() > 18000))
+		{
+			event.entityLiving.removePotionEffect(Potion.regeneration.id);
+		}
+		
+		effect = event.entityLiving.getActivePotionEffect(Potion.heal);
+		
+		if(effect != null && (effect.getIsPotionDurationMax() || effect.getDuration() > 20))
+		{
+			event.entityLiving.removePotionEffect(Potion.heal.id);
+		}
+		
 		ItemStack stack = event.entityLiving.getHeldItem();
 		Item key = (Item)Item.itemRegistry.getObject(JTTC_Settings.portalKey);
 		boolean hasKey = stack != null && key != null && stack.getItem() == key && (JTTC_Settings.keyMeta < 0 || stack.getItemDamage() == JTTC_Settings.keyMeta);

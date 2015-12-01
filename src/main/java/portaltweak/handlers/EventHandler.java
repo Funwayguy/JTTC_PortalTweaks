@@ -15,6 +15,7 @@ import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
+import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -272,6 +273,17 @@ public class EventHandler
 			List<IMob> killList = event.player.worldObj.getEntitiesWithinAABB(IMob.class, event.player.boundingBox.expand(JTTC_Settings.spawnKillRange, JTTC_Settings.spawnKillRange, JTTC_Settings.spawnKillRange));
 			
 			for(IMob mob : killList)
+			{
+				if(mob instanceof Entity)
+				{
+					((Entity)mob).setDead();
+				}
+			}
+			
+			@SuppressWarnings("unchecked")
+			List<EntityMob> killList2 = event.player.worldObj.getEntitiesWithinAABB(EntityMob.class, event.player.boundingBox.expand(JTTC_Settings.spawnKillRange, JTTC_Settings.spawnKillRange, JTTC_Settings.spawnKillRange));
+			
+			for(IMob mob : killList2)
 			{
 				if(mob instanceof Entity)
 				{

@@ -183,21 +183,21 @@ public class EventHandler
 		// Invincible exploit prevention
 		PotionEffect effect = event.entityLiving.getActivePotionEffect(Potion.resistance);
 		
-		if(effect != null && (effect.getIsPotionDurationMax() || effect.getDuration() > 18000))
+		if(effect != null && effect.getDuration() > 18000)
 		{
 			event.entityLiving.removePotionEffect(Potion.resistance.id);
 		}
 		
 		effect = event.entityLiving.getActivePotionEffect(Potion.regeneration);
 		
-		if(effect != null && (effect.getIsPotionDurationMax() || effect.getDuration() > 18000))
+		if(effect != null && effect.getDuration() > 18000)
 		{
 			event.entityLiving.removePotionEffect(Potion.regeneration.id);
 		}
 		
 		effect = event.entityLiving.getActivePotionEffect(Potion.heal);
 		
-		if(effect != null && (effect.getIsPotionDurationMax() || effect.getDuration() > 20))
+		if(effect != null && effect.getDuration() > 20)
 		{
 			event.entityLiving.removePotionEffect(Potion.heal.id);
 		}

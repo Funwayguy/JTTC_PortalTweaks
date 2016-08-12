@@ -62,6 +62,13 @@ public class ConfigHandler
 		JTTC_Settings.deepDarkCaves = config.getInt("Deep Dark Caves", "Main", 50, 0, 100, "Amount of extra caves/ravines in the deep dark");
 		JTTC_Settings.coreLavaY = config.getInt("Core Lava Height", "Main", 32, 0, 64, "How high is the lava core in the End dimension");
 		JTTC_Settings.dmgLimit = config.getInt("Entity Damage Limit", "Main", 20, 1, Integer.MAX_VALUE, "How much damage is the player allowed to inflict on the seleted entities in one hit");
+		JTTC_Settings.bannedEnch.clear();
+		int[] tmp = config.get("Main", "Banned Enchantments", new int[0], "List of enchantment IDs that will be removed upon detection", 0, Integer.MAX_VALUE).getIntList();
+		
+		for(int i : tmp)
+		{
+			JTTC_Settings.bannedEnch.add(i);
+		}
 		
 		JTTC_Settings.dmgLimitedMobs.clear();;
 		

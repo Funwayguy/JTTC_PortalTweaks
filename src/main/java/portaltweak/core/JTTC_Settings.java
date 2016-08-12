@@ -26,6 +26,7 @@ public class JTTC_Settings
 	public static int coreLavaY = 32;
 	public static int dmgLimit = 20;
 	public static ArrayList<String> dmgLimitedMobs = new ArrayList<String>();
+	public static ArrayList<Integer> bannedEnch = new ArrayList<Integer>();
 	
 	public static HashMap<Integer, DimSettings> dimSettings = new HashMap<Integer, DimSettings>();
 }

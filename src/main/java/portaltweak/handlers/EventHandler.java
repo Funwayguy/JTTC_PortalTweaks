@@ -4,11 +4,13 @@ import java.io.File;
 import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockBed;
 import net.minecraft.block.BlockEndPortal;
 import net.minecraft.block.material.Material;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLiving;
@@ -227,6 +229,31 @@ public class EventHandler
 			} else if(player.getBedLocation(player.dimension) != null && !player.isSpawnForced(player.dimension)) // Force player spawns even on broken beds. Prevents re-spawning on top of the world
 			{
 				player.setSpawnChunk(player.getBedLocation(player.dimension), true, player.dimension);
+			}
+			
+			int invoIdx = player.ticksExisted%player.inventory.getSizeInventory();
+			ItemStack iStack = player.inventory.getStackInSlot(invoIdx);
+			
+			if(iStack != null)
+			{
+				boolean modEnch = false;
+				@SuppressWarnings("unchecked")
+				Map<Integer,Integer> enchMap = EnchantmentHelper.getEnchantments(iStack);
+				
+				for(int bId : JTTC_Settings.bannedEnch)
+				{
+					if(enchMap.containsKey(bId))
+					{
+						modEnch = true;
+						enchMap.remove(bId);
+					}
+				}
+				
+				if(modEnch)
+				{
+					EnchantmentHelper.setEnchantments(enchMap, iStack);
+					player.inventory.setInventorySlotContents(invoIdx, iStack);
+				}
 			}
 		}
 	}
